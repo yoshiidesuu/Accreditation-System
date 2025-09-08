@@ -64,18 +64,18 @@
 
 ### Phase 1 — Core & infra
 
-* [ ] Initialize Laravel project.
-* [ ] Install Bootstrap 5.3 and set up main layout (mobile-responsiveness).
-* [ ] Add PWA scaffolding (manifest.json, service worker, offline page).
-* [ ] Configure database connection and DB user with least privileges.
-* [ ] Create initial migrations (single-file policy — see section 6).
-* [ ] Seed initial admin user and roles (single-seeder file).
-* [ ] Set up CI to run `php artisan test` and `npm run build`.
-* [ ] **Create layout structure with two main folders:**
-  * [ ] **Admin Layout** (`resources/views/admin/`) - Full administrative interface with complete system control
-  * [ ] **User Layout** (`resources/views/user/`) - Role-based interface where different user roles (dean, accreditor_lead, accreditor_member, chairperson, faculty, overall_coordinator) access different CRUD features based on their permissions
-  * [ ] Implement role-based navigation and feature visibility in user layout
-  * [ ] Create shared components between admin and user layouts for consistency
+* [x] Initialize Laravel project.
+* [x] Install Bootstrap 5.3 and set up main layout (mobile-responsiveness).
+* [x] Add PWA scaffolding (manifest.json, service worker, offline page).
+* [x] Configure database connection and DB user with least privileges.
+* [x] Create initial migrations (single-file policy — see section 6).
+* [x] Seed initial admin user and roles (single-seeder file).
+* [x] Set up CI to run `php artisan test` and `npm run build`.
+* [x] **Create layout structure with two main folders:**
+  * [x] **Admin Layout** (`resources/views/admin/`) - Full administrative interface with complete system control
+  * [x] **User Layout** (`resources/views/user/`) - Role-based interface where different user roles (dean, accreditor_lead, accreditor_member, chairperson, faculty, overall_coordinator) access different CRUD features based on their permissions
+  * [x] Implement role-based navigation and feature visibility in user layout
+  * [x] Create shared components between admin and user layouts for consistency
 
 ### Phase 2 — Authentication & security
 
