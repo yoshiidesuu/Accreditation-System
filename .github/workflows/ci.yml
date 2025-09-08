@@ -1,0 +1,138 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: accreditation_system_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, dom, fileinfo, mysql, gd, zip
+        coverage: xdebug
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Install PHP Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    - name: Install NPM Dependencies
+      run: npm ci
+
+    - name: Generate key
+      run: php artisan key:generate
+
+    - name: Directory Permissions
+      run: chmod -R 777 storage bootstrap/cache
+
+    - name: Create Database
+      run: |
+        mysql -h 127.0.0.1 -u root -proot -e "CREATE DATABASE IF NOT EXISTS accreditation_system_test;"
+        mysql -h 127.0.0.1 -u root -proot -e "CREATE USER IF NOT EXISTS 'accred_user'@'%' IDENTIFIED BY 'AccredSys2024!';"
+        mysql -h 127.0.0.1 -u root -proot -e "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON accreditation_system_test.* TO 'accred_user'@'%';"
+        mysql -h 127.0.0.1 -u root -proot -e "FLUSH PRIVILEGES;"
+
+    - name: Configure Environment
+      run: |
+        echo "DB_CONNECTION=mysql" >> .env
+        echo "DB_HOST=127.0.0.1" >> .env
+        echo "DB_PORT=3306" >> .env
+        echo "DB_DATABASE=accreditation_system_test" >> .env
+        echo "DB_USERNAME=accred_user" >> .env
+        echo "DB_PASSWORD=AccredSys2024!" >> .env
+
+    - name: Run Migrations
+      run: php artisan migrate --force
+
+    - name: Run Database Seeders
+      run: php artisan db:seed --force
+
+    - name: Execute tests (Unit and Feature tests) via PHPUnit
+      run: php artisan test
+
+    - name: Build Assets
+      run: npm run build
+
+    - name: Check Build Output
+      run: |
+        if [ ! -d "public/build" ]; then
+          echo "Build directory not found!"
+          exit 1
+        fi
+        echo "Build completed successfully"
+        ls -la public/build/
+
+  security:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, dom, fileinfo, mysql
+
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    - name: Run Security Audit
+      run: composer audit
+
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, dom, fileinfo, mysql
+
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    - name: Run PHP CS Fixer (dry-run)
+      run: |
+        if [ -f "vendor/bin/php-cs-fixer" ]; then
+          vendor/bin/php-cs-fixer fix --dry-run --diff
+        else
+          echo "PHP CS Fixer not installed, skipping..."
+        fi
+
+    - name: Run PHPStan
+      run: |
+        if [ -f "vendor/bin/phpstan" ]; then
+          vendor/bin/phpstan analyse
+        else
+          echo "PHPStan not installed, skipping..."
+        fi

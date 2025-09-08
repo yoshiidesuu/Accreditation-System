@@ -71,6 +71,11 @@
 * [ ] Create initial migrations (single-file policy — see section 6).
 * [ ] Seed initial admin user and roles (single-seeder file).
 * [ ] Set up CI to run `php artisan test` and `npm run build`.
+* [ ] **Create layout structure with two main folders:**
+  * [ ] **Admin Layout** (`resources/views/admin/`) - Full administrative interface with complete system control
+  * [ ] **User Layout** (`resources/views/user/`) - Role-based interface where different user roles (dean, accreditor_lead, accreditor_member, chairperson, faculty, overall_coordinator) access different CRUD features based on their permissions
+  * [ ] Implement role-based navigation and feature visibility in user layout
+  * [ ] Create shared components between admin and user layouts for consistency
 
 ### Phase 2 — Authentication & security
 
@@ -97,6 +102,12 @@
 ### Phase 4 — Core modules
 
 Create each module with RESTful controllers, policies, validations, tests.
+
+**Layout Implementation Requirements:**
+* [ ] Implement admin-side views in `resources/views/admin/` with full CRUD capabilities
+* [ ] Implement user-side views in `resources/views/user/` with role-based CRUD restrictions
+* [ ] Create role-based middleware to route users to appropriate layout (admin vs user)
+* [ ] Ensure consistent UI/UX between admin and user layouts while maintaining different permission levels
 
 #### 4.1 College Input
 
