@@ -47,7 +47,7 @@ return [
     |
     */
 
-    'encrypt' => env('SESSION_ENCRYPT', false),
+    'encrypt' => env('SESSION_ENCRYPT', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -87,6 +87,24 @@ return [
     */
 
     'table' => env('SESSION_TABLE', 'sessions'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Session Cookie Security
+    |--------------------------------------------------------------------------
+    |
+    | These options control the security settings for session cookies.
+    | secure: Only send cookies over HTTPS
+    | http_only: Prevent JavaScript access to cookies
+    | same_site: Control cross-site request behavior
+    |
+    */
+
+    'secure' => env('SESSION_SECURE_COOKIE', false),
+
+    'http_only' => env('SESSION_HTTP_ONLY', true),
+
+    'same_site' => env('SESSION_SAME_SITE', 'lax'),
 
     /*
     |--------------------------------------------------------------------------

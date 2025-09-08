@@ -30,16 +30,16 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255', 'no_xss'],
+            'last_name' => ['required', 'string', 'max:255', 'no_xss'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
             'employee_id' => 'EMP' . str_pad(User::count() + 1, 4, '0', STR_PAD_LEFT),
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
+            'first_name' => \App\Helpers\SecurityHelper::sanitizeInput($request->first_name),
+            'last_name' => \App\Helpers\SecurityHelper::sanitizeInput($request->last_name),
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'staff', // Default role

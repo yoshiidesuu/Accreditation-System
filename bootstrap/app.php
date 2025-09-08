@@ -11,11 +11,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Global middleware
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+        
+        // Middleware aliases
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleBasedAccess::class,
             'redirect.role' => \App\Http\Middleware\RedirectBasedOnRole::class,
+            'file.throttle' => \App\Http\Middleware\FileRateLimit::class,
         ]);
     })
+    ->withProviders([
+        \App\Providers\SecurityServiceProvider::class,
+    ])
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

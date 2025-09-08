@@ -79,14 +79,14 @@
 
 ### Phase 2 — Authentication & security
 
-* [ ] Implement authentication scaffold (Laravel Breeze / Fortify) with Argon2id hashing.
-* [ ] Implement session security (secure cookies, httpOnly, sameSite).
-* [ ] CSRF protection enabled by default — add audit to ensure forms include tokens.
-* [ ] Security headers via middleware: X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Content-Security-Policy (CSP) baseline.
-* [ ] Rate limiting on auth endpoints and file requests.
-* [ ] Implement 2FA (Google Authenticator) admin opt-in page.
-* [ ] XSS protection: encode outputs; sanitize user-submitted text.
-* [ ] Use prepared statements / query builder to avoid SQL injection.
+* [x] Implement authentication scaffold (Laravel Breeze / Fortify) with Argon2id hashing.
+* [x] Implement session security (secure cookies, httpOnly, sameSite).
+* [x] CSRF protection enabled by default — add audit to ensure forms include tokens.
+* [x] Security headers via middleware: X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Content-Security-Policy (CSP) baseline.
+* [x] Rate limiting on auth endpoints and file requests.
+* [x] Implement 2FA (Google Authenticator) with user opt-in functionality.
+* [x] XSS protection: encode outputs; sanitize user-submitted text.
+* [x] Use prepared statements / query builder to avoid SQL injection.
 
 ### Phase 3 — Roles & permissions
 
