@@ -64,7 +64,6 @@
 
 ### Phase 1 — Core & infra
 
-* [ ] Create repository + branch strategy (main, develop, feature/\*).
 * [ ] Initialize Laravel project.
 * [ ] Install Bootstrap 5.3 and set up main layout (mobile-responsiveness).
 * [ ] Add PWA scaffolding (manifest.json, service worker, offline page).
