@@ -696,7 +696,7 @@
                             <!-- Dashboard mockup -->
                             <rect x="50" y="50" width="400" height="300" fill="#ffffff" stroke="#800020" stroke-width="2" rx="10"/>
                             <!-- Header -->
-                            <rect x="50" y="50" width="400" height="60" fill="#800020" rx="10 10 0 0"/>
+                            <rect x="50" y="50" width="400" height="60" fill="#800020" rx="10"/>
                             <circle cx="80" cy="80" r="8" fill="#d4af37"/>
                             <rect x="100" y="75" width="100" height="10" fill="#ffffff" rx="5"/>
                             <!-- Navigation -->

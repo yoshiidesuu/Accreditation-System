@@ -32,11 +32,11 @@ class SecurityHeaders
         // Content Security Policy - baseline configuration
         $csp = [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com",
-            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com",
-            "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com",
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.bunny.net https://unpkg.com",
+            "font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com",
             "img-src 'self' data: https: blob:",
-            "connect-src 'self'",
+            "connect-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com",
             "media-src 'self'",
             "object-src 'none'",
             "frame-src 'none'",
@@ -65,7 +65,6 @@ class SecurityHeaders
             'magnetometer=()',
             'gyroscope=()',
             'accelerometer=()',
-            'ambient-light-sensor=()',
             'autoplay=(self)',
             'encrypted-media=(self)',
             'fullscreen=(self)',
