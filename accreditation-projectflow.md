@@ -162,15 +162,15 @@ Create each module with RESTful controllers, policies, validations, tests.
 
 ### Phase 6 — SWOT Analysis & Area Ranking
 
-* [ ] SWOT model `swot_entries` (college\_id, area\_id, type: S/W/O/T, description, created\_by).
-* [ ] CRUD UI for Chairperson and Faculty to add their SWOT items.
-* [ ] Accreditor review queue for SWOT items.
-* [ ] Area ranking algorithm:
+* [x] SWOT model `swot_entries` (college\_id, area\_id, type: S/W/O/T, description, created\_by).
+* [x] CRUD UI for Chairperson and Faculty to add their SWOT items.
+* [x] Accreditor review queue for SWOT items.
+* [x] Area ranking algorithm:
 
-  * [ ] Define ranking inputs (parameter completion %, quality score, accreditor rating).
-  * [ ] Create `area_rankings` table or view that computes and stores rank snapshots.
-  * [ ] Weekly or on-demand ranking job (Queue + Cron).
-* [ ] Exportable ranking & SWOT reports (PDF/CSV).
+  * [x] Define ranking inputs (parameter completion %, quality score, accreditor rating).
+  * [x] Create `area_rankings` table or view that computes and stores rank snapshots.
+  * [x] Weekly or on-demand ranking job (Queue + Cron).
+* [x] Exportable ranking & SWOT reports (PDF/CSV).
 
 ### Phase 7 — Admin settings & appearance
 
