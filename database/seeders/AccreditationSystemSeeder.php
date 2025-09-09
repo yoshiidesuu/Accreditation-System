@@ -18,13 +18,13 @@ class AccreditationSystemSeeder extends Seeder
 
         // Create initial admin user
         $adminId = DB::table('users')->insertGetId([
-            'employee_id' => 'ADMIN001',
+            'employee_id' => 'admin',
             'first_name' => 'System',
             'middle_name' => null,
             'last_name' => 'Administrator',
             'email' => 'admin@earist.edu.ph',
             'email_verified_at' => $now,
-            'password' => Hash::make('AdminPass2024!'),
+            'password' => Hash::make('admin'),
             'role' => 'admin',
             'status' => 'active',
             'department' => 'Administration',

@@ -194,6 +194,11 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.audit*') ? 'active' : '' }}" href="{{ route('admin.audit.index') ?? '#' }}">
+                                <i class="fas fa-history me-2"></i>Audit Logs
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.settings*') ? 'active' : '' }}" href="{{ route('admin.settings.index') ?? '#' }}">
                                 <i class="fas fa-cog me-2"></i>System Settings
                             </a>

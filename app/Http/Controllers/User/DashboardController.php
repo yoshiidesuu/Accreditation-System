@@ -23,13 +23,13 @@ class DashboardController extends Controller
         $user = Auth::user();
         $userRole = $user->role ?? 'user';
         
-        // Base statistics available to all users
+        // Base statistics for all users
         $stats = [
-            'my_contents' => ParameterContent::where('user_id', $user->id)->count(),
-            'pending_contents' => ParameterContent::where('user_id', $user->id)
+            'my_contents' => ParameterContent::where('uploaded_by', $user->id)->count(),
+            'pending_contents' => ParameterContent::where('uploaded_by', $user->id)
                 ->where('status', 'pending')
                 ->count(),
-            'approved_contents' => ParameterContent::where('user_id', $user->id)
+            'approved_contents' => ParameterContent::where('uploaded_by', $user->id)
                 ->where('status', 'approved')
                 ->count(),
         ];

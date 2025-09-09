@@ -19,16 +19,17 @@ class RedirectBasedOnRole
     {
         if (Auth::check()) {
             $user = Auth::user();
-            $userRole = $user->role ?? 'user';
+            $userRoles = $user->getRoleNames();
+            $primaryRole = $userRoles->first() ?? 'user';
             
             // If user is trying to access login/register pages while authenticated
             if ($request->routeIs('login') || $request->routeIs('register')) {
-                return $this->redirectToDashboard($userRole);
+                return $this->redirectToDashboard($primaryRole);
             }
             
             // If user is accessing root path, redirect to appropriate dashboard
             if ($request->is('/')) {
-                return $this->redirectToDashboard($userRole);
+                return $this->redirectToDashboard($primaryRole);
             }
         }
         
@@ -44,7 +45,9 @@ class RedirectBasedOnRole
             case 'admin':
                 return redirect()->route('admin.dashboard');
             
-            case 'coordinator':
+            case 'overall_coordinator':
+            case 'dean':
+            case 'chairperson':
             case 'faculty':
             case 'accreditor_lead':
             case 'accreditor_member':

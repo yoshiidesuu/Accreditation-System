@@ -17,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Middleware aliases
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleBasedAccess::class,
+            'permission' => \App\Http\Middleware\PermissionMiddleware::class,
+            'can.request' => \App\Http\Middleware\CanRequestAccessMiddleware::class,
             'redirect.role' => \App\Http\Middleware\RedirectBasedOnRole::class,
             'file.throttle' => \App\Http\Middleware\FileRateLimit::class,
         ]);

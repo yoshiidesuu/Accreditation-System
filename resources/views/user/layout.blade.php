@@ -211,10 +211,34 @@
                     </li>
                     @endcan
                     
+                    @can('parameter_contents.request_access')
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('user.access-requests*') ? 'active' : '' }}" href="{{ route('user.access-requests.index') ?? '#' }}">
+                            <i class="fas fa-key me-1"></i>Access Requests
+                        </a>
+                    </li>
+                    @endcan
+                    
                     @hasanyrole('staff')
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('user.accreditations*') ? 'active' : '' }}" href="{{ route('user.accreditations.index') ?? '#' }}">
                             <i class="fas fa-certificate me-1"></i>Accreditations
+                        </a>
+                    </li>
+                    @endhasanyrole
+                    
+                    @hasrole('overall_coordinator')
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('user.accreditations.coordinatorTagging') || request()->routeIs('user.accreditations.assignAccreditors') || request()->routeIs('user.accreditations.showTagging') ? 'active' : '' }}" href="{{ route('user.accreditations.coordinatorTagging') ?? '#' }}">
+                            <i class="fas fa-tags me-1"></i>Coordinator Tagging
+                        </a>
+                    </li>
+                    @endhasrole
+                    
+                    @hasanyrole('accreditor_lead|accreditor_member')
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('user.accreditations.accreditor-dashboard') ? 'active' : '' }}" href="{{ route('user.accreditations.accreditor-dashboard') ?? '#' }}">
+                            <i class="fas fa-clipboard-check me-1"></i>Accreditor Dashboard
                         </a>
                     </li>
                     @endhasanyrole

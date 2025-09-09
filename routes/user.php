@@ -20,8 +20,8 @@ use App\Http\Controllers\User\ProfileController;
 |
 */
 
-Route::middleware(['auth', 'role:coordinator,faculty,staff'])->prefix('user')->name('user.')->group(function () {
-    // Dashboard - Available to all user roles
+Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+    // Dashboard - Available to all authenticated users
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // Profile Management - Available to all user roles
@@ -29,6 +29,9 @@ Route::middleware(['auth', 'role:coordinator,faculty,staff'])->prefix('user')->n
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/settings', [ProfileController::class, 'settings'])->name('settings');
     Route::put('/settings', [ProfileController::class, 'updateSettings'])->name('settings.update');
+    
+    // Routes that require specific roles
+    Route::middleware('role:coordinator,faculty,staff')->group(function () {
     
     // College Management - Coordinators and Faculty can view/edit their colleges
     Route::middleware('role:coordinator,faculty')->group(function () {
@@ -55,6 +58,33 @@ Route::middleware(['auth', 'role:coordinator,faculty,staff'])->prefix('user')->n
         Route::post('accreditations/{accreditation}/evaluate', [AccreditationController::class, 'evaluate'])->name('accreditations.evaluate');
         Route::post('accreditations/{accreditation}/submit-report', [AccreditationController::class, 'submitReport'])->name('accreditations.submit-report');
     });
+    
+    // Coordinator Tagging - Overall coordinators can tag colleges and assign accreditors
+    Route::middleware('role:overall_coordinator')->group(function () {
+        Route::get('accreditations/coordinator-tagging', [AccreditationController::class, 'coordinatorTagging'])->name('accreditations.coordinator-tagging');
+        Route::post('accreditations/{accreditation}/assign-accreditors', [AccreditationController::class, 'assignAccreditors'])->name('accreditations.assign-accreditors');
+        Route::get('accreditations/{accreditation}/tagging', [AccreditationController::class, 'showTagging'])->name('accreditations.show-tagging');
+        Route::post('accreditations/{accreditation}/tag-content', [AccreditationController::class, 'tagContent'])->name('accreditations.tag-content');
+        Route::delete('accreditations/{accreditation}/untag-content', [AccreditationController::class, 'untagContent'])->name('accreditations.untag-content');
+    });
+    
+    // Accreditor Access - Assigned accreditors can view dashboard and tagging interface
+    Route::middleware('role:accreditor_lead,accreditor_member')->group(function () {
+        Route::get('accreditations/accreditor-dashboard', [AccreditationController::class, 'accreditorDashboard'])->name('accreditations.accreditor-dashboard');
+        Route::get('accreditations/{accreditation}/tagging', [AccreditationController::class, 'showTagging'])->name('accreditations.show-tagging-accreditor');
+    });
+    
+    // Access Request routes
+    Route::prefix('access-requests')->name('access-requests.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\User\AccessRequestController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\User\AccessRequestController::class, 'store'])->name('store');
+        Route::get('/{accessRequest}', [\App\Http\Controllers\User\AccessRequestController::class, 'show'])->name('show');
+        Route::post('/{accessRequest}/approve', [\App\Http\Controllers\User\AccessRequestController::class, 'approve'])->name('approve');
+        Route::post('/{accessRequest}/reject', [\App\Http\Controllers\User\AccessRequestController::class, 'reject'])->name('reject');
+    });
+    
+    // Share link access route
+    Route::get('/share/{shareLink}', [\App\Http\Controllers\User\AccessRequestController::class, 'accessViaShareLink'])->name('share.access');
     
     // SWOT Analysis - Coordinators and Faculty can manage SWOT entries
     Route::middleware('role:coordinator,faculty')->group(function () {
@@ -83,4 +113,5 @@ Route::middleware(['auth', 'role:coordinator,faculty,staff'])->prefix('user')->n
         // Export functionality based on role
         Route::get('/export/{type}', [ReportController::class, 'export'])->name('export');
     });
+    }); // Close role-specific middleware group
 });

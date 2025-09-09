@@ -9,7 +9,12 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $user = auth()->user();
+    if ($user && $user->hasRole('admin')) {
+        return redirect()->route('admin.dashboard');
+    } else {
+        return redirect()->route('user.dashboard');
+    }
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -27,3 +32,9 @@ Route::middleware('auth')->group(function () {
 
 // Authentication Routes (Laravel Breeze)
 require __DIR__.'/auth.php';
+
+// Admin Routes
+require __DIR__.'/admin.php';
+
+// User Routes
+require __DIR__.'/user.php';

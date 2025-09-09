@@ -92,59 +92,59 @@
 
 **Task list:**
 
-* [ ] Install spatie/laravel-permission.
-* [ ] Create `roles` table seed (single file) with: `admin`, `dean`, `accreditor_lead`, `accreditor_member`, `chairperson`, `faculty`, `overall_coordinator`.
-* [ ] Create `permissions` seed (single file) for granular actions per module (see permission matrix).
-* [ ] Implement RBAC middleware (`role`, `permission`, and `can-request-access` variations).
-* [ ] UI admin page to manage user roles and assign permissions (database-driven form).
-* [ ] Build audit of role changes (who changed what, when).
+* [x] Install spatie/laravel-permission.
+* [x] Create `roles` table seed (single file) with: `admin`, `dean`, `accreditor_lead`, `accreditor_member`, `chairperson`, `faculty`, `overall_coordinator`.
+* [x] Create `permissions` seed (single file) for granular actions per module (see permission matrix).
+* [x] Implement RBAC middleware (`role`, `permission`, and `can-request-access` variations).
+* [x] UI admin page to manage user roles and assign permissions (database-driven form).
+* [x] Build audit of role changes (who changed what, when).
 
 ### Phase 4 — Core modules
 
 Create each module with RESTful controllers, policies, validations, tests.
 
 **Layout Implementation Requirements:**
-* [ ] Implement admin-side views in `resources/views/admin/` with full CRUD capabilities
-* [ ] Implement user-side views in `resources/views/user/` with role-based CRUD restrictions
-* [ ] Create role-based middleware to route users to appropriate layout (admin vs user)
-* [ ] Ensure consistent UI/UX between admin and user layouts while maintaining different permission levels
+* [x] Implement admin-side views in `resources/views/admin/` with full CRUD capabilities
+* [x] Implement user-side views in `resources/views/user/` with role-based CRUD restrictions
+* [x] Create role-based middleware to route users to appropriate layout (admin vs user)
+* [x] Ensure consistent UI/UX between admin and user layouts while maintaining different permission levels
 
 #### 4.1 College Input
 
-* [ ] DB model & migration: `colleges` (name, code, address, contact, coordinator\_id, meta JSON).
-* [ ] CRUD API + UI pages (list, create, edit, view, delete).
-* [ ] Assign overall coordinator & link to users.
-* [ ] Validation rules & tests.
+* [x] DB model & migration: `colleges` (name, code, address, contact, coordinator\_id, meta JSON).
+* [x] CRUD API + UI pages (list, create, edit, view, delete).
+* [x] Assign overall coordinator & link to users.
+* [x] Validation rules & tests.
 
 #### 4.2 Academic Year
 
-* [ ] Model & migration: `academic_years` (label, start\_date, end\_date, active boolean).
-* [ ] CRUD UI, default active year logic.
+* [x] Model & migration: `academic_years` (label, start\_date, end\_date, active boolean).
+* [x] CRUD UI, default active year logic.
 
 #### 4.3 Area Level Input
 
-* [ ] Model & migration: `areas` (code, title, description, parent\_area\_id optional).
-* [ ] Link area → college and academic\_year where applicable.
-* [ ] CRUD pages and permission checks.
+* [x] Model & migration: `areas` (code, title, description, parent\_area\_id optional).
+* [x] Link area → college and academic\_year where applicable.
+* [x] CRUD pages and permission checks.
 
 #### 4.4 Parameter Input
 
-* [ ] Model & migration: `parameters` (area\_id, code, name, description, weight, required boolean).
-* [ ] Admin UI for parameter templates and bulk import/export.
+* [x] Model & migration: `parameters` (area\_id, code, name, description, weight, required boolean).
+* [x] Admin UI for parameter templates and bulk import/export.
 
 #### 4.5 Parameter Content Input (with file uploads)
 
-* [ ] Model & migration: `parameter_contents` (parameter\_id, uploaded\_by, title, description, file\_storage\_type, external\_drive\_id, tags, visibility, approved boolean).
-* [ ] File store abstraction: local storage + Google Drive adapter.
-* [ ] Implement upload UI (multiple files), with client & server validation (file size & type restrictions set in Admin Settings).
-* [ ] Ownership rules:
+* [x] Model & migration: `parameter_contents` (parameter\_id, uploaded\_by, title, description, file\_storage\_type, external\_drive\_id, tags, visibility, approved boolean).
+* [x] File store abstraction: local storage + Google Drive adapter.
+* [x] Implement upload UI (multiple files), with client & server validation (file size & type restrictions set in Admin Settings).
+* [x] Ownership rules:
 
   * Faculty: can upload, edit, delete **their own** parameter contents.
   * Chairperson: can upload missing or required files (for college they represent) but should be logged.
   * Accreditor (Lead & Member): can **view** files if tagged to accreditation. If not tagged, must request access.
   * Admin: full control (view/edit/delete).
-* [ ] Tagging system to tag a uploaded file to specific accreditation or user.
-* [ ] Implement preview (PDF/image) and download endpoints with permission checks.
+* [x] Tagging system to tag a uploaded file to specific accreditation or user.
+* [x] Implement preview (PDF/image) and download endpoints with permission checks.
 
 ### Phase 5 — Accreditation workflows & access requests
 
