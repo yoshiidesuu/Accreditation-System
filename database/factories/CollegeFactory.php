@@ -23,7 +23,7 @@ class CollegeFactory extends Factory
             'code' => fake()->unique()->regexify('[A-Z]{3}'),
             'address' => fake()->address(),
             'contact' => fake()->phoneNumber(),
-            'coordinator_id' => 1, // Use existing user from seeder
+            'coordinator_id' => User::factory(),
             'meta' => [],
         ];
     }

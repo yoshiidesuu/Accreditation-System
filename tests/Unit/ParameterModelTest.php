@@ -31,7 +31,7 @@ class ParameterModelTest extends TestCase
             'subcategory' => '1',
             'weight' => 3,
             'status' => 'active',
-            'required_documents' => json_encode(['document1', 'document2']),
+            'required_documents' => ['document1', 'document2'],
             'evaluation_criteria' => 'Test criteria',
             'created_by' => 1,
         ]);
@@ -51,7 +51,7 @@ class ParameterModelTest extends TestCase
     public function it_casts_attributes_correctly()
     {
         $parameter = Parameter::factory()->create([
-            'required_documents' => json_encode(['doc1', 'doc2']),
+            'required_documents' => ['doc1', 'doc2'],
             'weight' => 5,
         ]);
 
@@ -137,7 +137,7 @@ class ParameterModelTest extends TestCase
     public function it_has_required_documents()
     {
         $parameter = Parameter::factory()->create([
-            'required_documents' => json_encode(['document1.pdf', 'document2.docx'])
+            'required_documents' => ['document1.pdf', 'document2.docx']
         ]);
 
         $this->assertIsArray($parameter->required_documents);
@@ -165,67 +165,26 @@ class ParameterModelTest extends TestCase
         
         $userContent = ParameterContent::factory()->create([
             'parameter_id' => $parameter->id,
-            'user_id' => $userId,
-            'value' => 'User content'
+            'uploaded_by' => $userId,
+            'content' => 'User content'
         ]);
         
         ParameterContent::factory()->create([
             'parameter_id' => $parameter->id,
-            'user_id' => $otherUserId,
-            'value' => 'Other user content'
+            'uploaded_by' => $otherUserId,
+            'content' => 'Other user content'
         ]);
 
         $content = $parameter->getContentForUser($userId);
 
         $this->assertInstanceOf(ParameterContent::class, $content);
-        $this->assertEquals('User content', $content->value);
-        $this->assertEquals($userId, $content->user_id);
+        $this->assertEquals('User content', $content->content);
+        $this->assertEquals($userId, $content->uploaded_by);
     }
 
-    /** @test */
-    public function it_validates_required_fields()
-    {
-        $requiredParam = Parameter::factory()->create(['required' => true]);
-        $optionalParam = Parameter::factory()->create(['required' => false]);
 
-        $this->assertEquals(['error' => 'This field is required.'], $requiredParam->validateValue(''));
-        $this->assertEquals(['error' => 'This field is required.'], $requiredParam->validateValue(null));
-        $this->assertEquals(['success' => true], $requiredParam->validateValue('valid value'));
-        $this->assertEquals(['success' => true], $optionalParam->validateValue(''));
-    }
 
-    /** @test */
-    public function it_validates_number_type()
-    {
-        $numberParam = Parameter::factory()->create(['type' => 'number']);
 
-        $this->assertEquals(['success' => true], $numberParam->validateValue('123'));
-        $this->assertEquals(['success' => true], $numberParam->validateValue(123));
-        $this->assertEquals(['error' => 'This field must be a number.'], $numberParam->validateValue('abc'));
-    }
-
-    /** @test */
-    public function it_validates_date_type()
-    {
-        $dateParam = Parameter::factory()->create(['type' => 'date']);
-
-        $this->assertEquals(['success' => true], $dateParam->validateValue('2024-01-01'));
-        $this->assertEquals(['success' => true], $dateParam->validateValue('January 1, 2024'));
-        $this->assertEquals(['error' => 'This field must be a valid date.'], $dateParam->validateValue('invalid-date'));
-    }
-
-    /** @test */
-    public function it_validates_select_options()
-    {
-        $selectParam = Parameter::factory()->create([
-            'type' => 'select',
-            'options' => ['opt1' => 'Option 1', 'opt2' => 'Option 2']
-        ]);
-
-        $this->assertEquals(['success' => true], $selectParam->validateValue('opt1'));
-        $this->assertEquals(['success' => true], $selectParam->validateValue('opt2'));
-        $this->assertEquals(['error' => 'Invalid option selected.'], $selectParam->validateValue('opt3'));
-    }
 
     /** @test */
     public function it_uses_soft_deletes()

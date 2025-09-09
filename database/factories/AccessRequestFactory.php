@@ -20,7 +20,7 @@ class AccessRequestFactory extends Factory
     {
         return [
             'file_id' => fake()->uuid(),
-            'requester_id' => 1, // Use existing user from seeder
+            'requester_id' => User::factory(),
             'reason' => fake()->sentence(),
             'status' => fake()->randomElement(['pending', 'approved', 'rejected']),
             'approver_id' => null,

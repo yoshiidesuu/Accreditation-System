@@ -24,11 +24,11 @@ class ActivityLogFactory extends Factory
             'description' => fake()->sentence(),
             'subject_type' => fake()->randomElement([User::class, null]),
             'subject_id' => function (array $attributes) {
-                return $attributes['subject_type'] ? 1 : null;
+                return $attributes['subject_type'] ? User::factory() : null;
             },
             'event' => fake()->randomElement(['created', 'updated', 'deleted', 'accessed']),
             'causer_type' => User::class,
-            'causer_id' => 1, // Use existing user from seeder
+            'causer_id' => User::factory(),
             'properties' => [
                 'ip_address' => fake()->ipv4(),
                 'user_agent' => fake()->userAgent(),

@@ -28,6 +28,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'college_id',
         'status',
         'department',
         'position',

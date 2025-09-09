@@ -22,6 +22,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role', ['admin', 'coordinator', 'faculty', 'staff'])->default('faculty');
+            $table->unsignedBigInteger('college_id')->nullable();
             $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
             $table->string('department')->nullable();
             $table->string('position')->nullable();
@@ -312,6 +313,11 @@ return new class extends Migration
             
             $table->index(['is_active', 'starts_at', 'ends_at']);
             $table->index('priority');
+        });
+
+        // Add foreign key constraints after all tables are created
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('college_id')->references('id')->on('colleges')->onDelete('set null');
         });
     }
 

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Parameter;
 use App\Models\Area;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -26,9 +27,9 @@ class ParameterFactory extends Factory
             'subcategory' => fake()->optional()->regexify('[1-9]\.[1-9]'),
             'weight' => fake()->numberBetween(1, 5),
             'status' => fake()->randomElement(['active', 'inactive', 'draft']),
-            'required_documents' => json_encode([]),
+            'required_documents' => [],
             'evaluation_criteria' => fake()->paragraph(),
-            'created_by' => 1, // Use existing user from seeder
+            'created_by' => User::factory(),
             'updated_by' => null,
         ];
     }

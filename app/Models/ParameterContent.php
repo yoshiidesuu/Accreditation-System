@@ -14,41 +14,34 @@ class ParameterContent extends Model
 
     protected $fillable = [
         'parameter_id',
-        'user_id',
-        'college_id',
-        'academic_year_id',
+        'uploaded_by',
+        'title',
+        'description',
+        'content_type',
+        'file_path',
+        'file_name',
+        'file_size',
+        'mime_type',
         'content',
-        'notes',
-        'attachments',
         'status',
-        'meta',
-        'submitted_at',
-        'reviewed_at',
+        'review_notes',
         'reviewed_by',
-        'drive_file_id',
-        'share_link',
-        'storage_driver',
-        'file_metadata',
-        'requires_permission',
-        'permission_requested_at',
-        'permission_status',
+        'reviewed_at',
+        'version',
+        'is_current_version',
     ];
 
     protected $casts = [
-        'attachments' => 'array',
-        'meta' => 'array',
-        'file_metadata' => 'array',
-        'requires_permission' => 'boolean',
-        'submitted_at' => 'datetime',
+        'is_current_version' => 'boolean',
         'reviewed_at' => 'datetime',
-        'permission_requested_at' => 'datetime',
+        'version' => 'integer',
     ];
 
     // Status constants
-    const STATUS_DRAFT = 'draft';
-    const STATUS_SUBMITTED = 'submitted';
+    const STATUS_PENDING = 'pending';
     const STATUS_APPROVED = 'approved';
     const STATUS_REJECTED = 'rejected';
+    const STATUS_REVISION_NEEDED = 'revision_needed';
 
     public static function getStatuses()
     {
@@ -69,33 +62,19 @@ class ParameterContent extends Model
     }
 
     /**
-     * Get the user that owns the content.
+     * Get the user who uploaded this content.
      */
-    public function user(): BelongsTo
+    public function uploadedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'uploaded_by');
     }
 
-    /**
-     * Get the college that owns the content.
-     */
-    public function college(): BelongsTo
-    {
-        return $this->belongsTo(College::class);
-    }
+
 
     /**
-     * Get the academic year that owns the content.
+     * Get the user who reviewed this content.
      */
-    public function academicYear(): BelongsTo
-    {
-        return $this->belongsTo(AcademicYear::class);
-    }
-
-    /**
-     * Get the user who reviewed the content.
-     */
-    public function reviewer(): BelongsTo
+    public function reviewedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by');
     }
@@ -157,27 +136,27 @@ class ParameterContent extends Model
     }
 
     /**
-     * Scope to filter by user.
+     * Scope to filter by uploaded user.
      */
-    public function scopeByUser($query, $userId)
+    public function scopeByUploadedBy($query, $userId)
     {
-        return $query->where('user_id', $userId);
+        return $query->where('uploaded_by', $userId);
     }
 
     /**
-     * Scope to filter by college.
+     * Scope to filter by content type.
      */
-    public function scopeByCollege($query, $collegeId)
+    public function scopeByContentType($query, $contentType)
     {
-        return $query->where('college_id', $collegeId);
+        return $query->where('content_type', $contentType);
     }
 
     /**
-     * Scope to filter by academic year.
+     * Scope to filter current version only.
      */
-    public function scopeByAcademicYear($query, $academicYearId)
+    public function scopeCurrentVersion($query)
     {
-        return $query->where('academic_year_id', $academicYearId);
+        return $query->where('is_current_version', true);
     }
 
     /**

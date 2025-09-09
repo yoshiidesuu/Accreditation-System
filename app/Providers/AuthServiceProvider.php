@@ -15,6 +15,12 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         SwotEntry::class => SwotPolicy::class,
+        \App\Models\College::class => \App\Policies\CollegePolicy::class,
+        \App\Models\Parameter::class => \App\Policies\ParameterPolicy::class,
+        \App\Models\ParameterContent::class => \App\Policies\ParameterContentPolicy::class,
+        \App\Models\AccessRequest::class => \App\Policies\AccessRequestPolicy::class,
+        \App\Models\Area::class => \App\Policies\AreaPolicy::class,
+        \App\Models\Accreditation::class => \App\Policies\AccreditationPolicy::class,
     ];
 
     /**

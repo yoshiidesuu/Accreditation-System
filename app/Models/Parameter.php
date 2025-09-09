@@ -122,7 +122,7 @@ class Parameter extends Model
     public function getContentForUser($userId)
     {
         return $this->parameterContents()
-            ->where('user_id', $userId)
+            ->where('uploaded_by', $userId)
             ->first();
     }
 

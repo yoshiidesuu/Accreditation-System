@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Area;
 use App\Models\College;
+use App\Models\AcademicYear;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -23,8 +24,8 @@ class AreaFactory extends Factory
             'title' => fake()->sentence(3),
             'description' => fake()->paragraph(),
             'parent_area_id' => null,
-            'college_id' => 1, // Use existing college from seeder
-            'academic_year_id' => 1,
+            'college_id' => College::factory(),
+            'academic_year_id' => AcademicYear::factory(),
         ];
     }
 }
