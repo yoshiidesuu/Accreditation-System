@@ -176,13 +176,13 @@ Create each module with RESTful controllers, policies, validations, tests.
 
 (Features already required — implement in admin settings UI)
 
-* [ ] Theme Management: change primary maroon color (via DB stored Bootstrap variables), preview, and publish.
-* [ ] Logo & favicon upload + versioning.
-* [ ] SMTP settings UI + test email.
-* [ ] 2FA management panel + backup codes UI.
-* [ ] Maintenance mode with whitelist and message editor.
-* [ ] File upload policy manager (allowed types, max size, retention policy).
-* [ ] Dark/light toggle stored in DB per user / system default.
+* [x] Theme Management: change primary maroon color (via DB stored Bootstrap variables), preview, and publish.
+* [x] Logo & favicon upload + versioning.
+* [x] SMTP settings UI + test email.
+* [x] 2FA management panel + backup codes UI.
+* [x] Maintenance mode with whitelist and message editor.
+* [x] File upload policy manager (allowed types, max size, retention policy).
+* [x] Dark/light toggle stored in DB per user / system default.
 
 ### Phase 8 — File handling & Google Drive integration
 

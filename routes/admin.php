@@ -16,6 +16,7 @@ use App\Http\Controllers\ReportController as MainReportController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\ThemeController;
 use App\Http\Controllers\Admin\BrandingController;
+use App\Http\Controllers\Admin\DrivePermissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -134,5 +135,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/stats', [AuditController::class, 'stats'])->name('stats');
         Route::post('/cleanup', [AuditController::class, 'cleanup'])->name('cleanup');
         Route::get('/{activity}', [AuditController::class, 'show'])->name('show');
+    });
+
+    // Google Drive Permissions
+    Route::prefix('drive-permissions')->name('drive-permissions.')->group(function () {
+        Route::get('/', [DrivePermissionController::class, 'index'])->name('index');
+        Route::get('/{parameterContent}', [DrivePermissionController::class, 'show'])->name('show');
+        Route::post('/{parameterContent}/grant', [DrivePermissionController::class, 'grant'])->name('grant');
+        Route::post('/{parameterContent}/deny', [DrivePermissionController::class, 'deny'])->name('deny');
+        Route::post('/bulk-action', [DrivePermissionController::class, 'bulkAction'])->name('bulk-action');
+        Route::get('/api/stats', [DrivePermissionController::class, 'stats'])->name('stats');
+        Route::post('/cleanup', [DrivePermissionController::class, 'cleanup'])->name('cleanup');
     });
 });

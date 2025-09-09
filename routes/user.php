@@ -10,6 +10,7 @@ use App\Http\Controllers\User\AccreditationController;
 use App\Http\Controllers\User\SwotController;
 use App\Http\Controllers\User\ReportController;
 use App\Http\Controllers\User\ProfileController;
+use App\Http\Controllers\User\DriveAccessController;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,6 +95,18 @@ Route::get('swot-review/stats', [App\Http\Controllers\Accreditor\SwotReviewContr
     
     // Share link access route
     Route::get('/share/{shareLink}', [\App\Http\Controllers\User\AccessRequestController::class, 'accessViaShareLink'])->name('share.access');
+    
+    // Google Drive Access
+    Route::prefix('drive-access')->name('drive-access.')->group(function () {
+        Route::get('/', [DriveAccessController::class, 'index'])->name('index');
+        Route::get('/{parameterContent}', [DriveAccessController::class, 'show'])->name('show');
+        Route::post('/{parameterContent}/request-access', [DriveAccessController::class, 'requestAccess'])->name('request-access');
+        Route::post('/upload', [DriveAccessController::class, 'upload'])->name('upload');
+        Route::put('/{parameterContent}', [DriveAccessController::class, 'update'])->name('update');
+        Route::delete('/{parameterContent}', [DriveAccessController::class, 'destroy'])->name('destroy');
+        Route::get('/{parameterContent}/access-url', [DriveAccessController::class, 'getAccessUrl'])->name('access-url');
+        Route::get('/{parameterContent}/check-access', [DriveAccessController::class, 'checkAccess'])->name('check-access');
+    });
     
     // SWOT Analysis - Chairpersons and Faculty can manage SWOT entries
     Route::middleware('role:chairperson,faculty')->group(function () {

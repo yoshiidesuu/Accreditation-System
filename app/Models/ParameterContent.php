@@ -25,13 +25,23 @@ class ParameterContent extends Model
         'submitted_at',
         'reviewed_at',
         'reviewed_by',
+        'drive_file_id',
+        'share_link',
+        'storage_driver',
+        'file_metadata',
+        'requires_permission',
+        'permission_requested_at',
+        'permission_status',
     ];
 
     protected $casts = [
         'attachments' => 'array',
         'meta' => 'array',
+        'file_metadata' => 'array',
+        'requires_permission' => 'boolean',
         'submitted_at' => 'datetime',
         'reviewed_at' => 'datetime',
+        'permission_requested_at' => 'datetime',
     ];
 
     // Status constants

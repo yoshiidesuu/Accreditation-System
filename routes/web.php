@@ -38,3 +38,11 @@ require __DIR__.'/admin.php';
 
 // User Routes
 require __DIR__.'/user.php';
+
+// Google Drive Proxy Routes
+Route::prefix('api/drive')->middleware(['auth'])->group(function () {
+    Route::get('/proxy/{fileId}', [App\Http\Controllers\Api\DriveProxyController::class, 'proxy'])->name('storage.proxy');
+    Route::post('/request-permission/{fileId}', [App\Http\Controllers\Api\DriveProxyController::class, 'requestPermission'])->name('drive.request-permission');
+    Route::get('/info/{fileId}', [App\Http\Controllers\Api\DriveProxyController::class, 'info'])->name('drive.info');
+    Route::post('/check-access', [App\Http\Controllers\Api\DriveProxyController::class, 'checkAccess'])->name('drive.check-access');
+});
