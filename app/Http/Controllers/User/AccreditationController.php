@@ -8,12 +8,19 @@ use App\Models\College;
 use App\Models\AcademicYear;
 use App\Models\User;
 use App\Models\ParameterContent;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
 
 class AccreditationController extends Controller
 {
+    protected $activityLogger;
+
+    public function __construct(ActivityLogger $activityLogger)
+    {
+        $this->activityLogger = $activityLogger;
+    }
     /**
      * Display a listing of accreditations.
      */
@@ -415,14 +422,15 @@ class AccreditationController extends Controller
         ]);
 
         // Log the assignment
-        activity()
-            ->performedOn($accreditation)
-            ->causedBy(Auth::user())
-            ->withProperties([
+        $this->activityLogger->logAccreditationTagging(
+            $accreditation,
+            'accreditors_assigned',
+            [
                 'assigned_lead_id' => $request->assigned_lead_id,
                 'assigned_members' => $request->assigned_members ?? [],
-            ])
-            ->log('Accreditors assigned to accreditation');
+                'assigned_by' => Auth::user()->name
+            ]
+        );
 
         return back()->with('success', 'Accreditors assigned successfully.');
     }
@@ -547,14 +555,15 @@ class AccreditationController extends Controller
         ]);
 
         // Log the tagging
-        activity()
-            ->performedOn($accreditation)
-            ->causedBy(Auth::user())
-            ->withProperties([
+        $this->activityLogger->logAccreditationTagging(
+            $accreditation,
+            'content_tagged',
+            [
                 'parameter_content_id' => $request->parameter_content_id,
                 'notes' => $request->notes,
-            ])
-            ->log('Parameter content tagged to accreditation');
+                'tagged_by' => Auth::user()->name
+            ]
+        );
 
         return back()->with('success', 'Content tagged successfully.');
     }
@@ -585,13 +594,14 @@ class AccreditationController extends Controller
         $tag->delete();
 
         // Log the untagging
-        activity()
-            ->performedOn($accreditation)
-            ->causedBy(Auth::user())
-            ->withProperties([
+        $this->activityLogger->logAccreditationTagging(
+            $accreditation,
+            'content_untagged',
+            [
                 'parameter_content_id' => $request->parameter_content_id,
-            ])
-            ->log('Parameter content untagged from accreditation');
+                'untagged_by' => Auth::user()->name
+            ]
+        );
 
         return back()->with('success', 'Content untagged successfully.');
     }

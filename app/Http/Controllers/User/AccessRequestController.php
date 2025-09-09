@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\AccessRequest;
 use App\Models\ParameterContent;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -16,6 +17,12 @@ use App\Notifications\AccessRequestRejected;
 
 class AccessRequestController extends Controller
 {
+    protected $activityLogger;
+
+    public function __construct(ActivityLogger $activityLogger)
+    {
+        $this->activityLogger = $activityLogger;
+    }
     /**
      * Display a listing of access requests.
      */
@@ -100,6 +107,18 @@ class AccessRequestController extends Controller
             'status' => AccessRequest::STATUS_PENDING,
         ]);
 
+        // Log the access request activity
+        $this->activityLogger->logAccessRequest(
+            $accessRequest->file,
+            'requested',
+            [
+                'requester_id' => Auth::id(),
+                'requester_name' => Auth::user()->name,
+                'reason' => $request->reason,
+                'access_request_id' => $accessRequest->id
+            ]
+        );
+
         // Notify file owner and admins
         $this->notifyRelevantUsers($accessRequest);
 
@@ -123,6 +142,21 @@ class AccessRequestController extends Controller
         $shareLinkDuration = $request->get('share_link_duration', 7);
         $generateShareLink = $request->boolean('generate_share_link', true);
         $accessRequest->approve(Auth::id(), $generateShareLink, $shareLinkDuration);
+
+        // Log the access approval activity
+        $this->activityLogger->logAccessRequest(
+            $accessRequest->file,
+            'approved',
+            [
+                'requester_id' => $accessRequest->requester_id,
+                'requester_name' => $accessRequest->requester->name,
+                'approver_id' => Auth::id(),
+                'approver_name' => Auth::user()->name,
+                'access_request_id' => $accessRequest->id,
+                'share_link_generated' => $generateShareLink,
+                'share_link_duration' => $shareLinkDuration
+            ]
+        );
 
         // Notify requester
         $accessRequest->requester->notify(new AccessRequestApproved($accessRequest));
@@ -149,6 +183,20 @@ class AccessRequestController extends Controller
         }
 
         $accessRequest->reject(Auth::id(), $request->rejection_reason);
+
+        // Log the access rejection activity
+        $this->activityLogger->logAccessRequest(
+            $accessRequest->file,
+            'rejected',
+            [
+                'requester_id' => $accessRequest->requester_id,
+                'requester_name' => $accessRequest->requester->name,
+                'approver_id' => Auth::id(),
+                'approver_name' => Auth::user()->name,
+                'access_request_id' => $accessRequest->id,
+                'rejection_reason' => $request->rejection_reason
+            ]
+        );
 
         // Notify requester
         $accessRequest->requester->notify(new AccessRequestRejected($accessRequest));

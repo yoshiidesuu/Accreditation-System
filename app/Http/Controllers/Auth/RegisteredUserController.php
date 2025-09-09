@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\ActivityLogger;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,6 +15,12 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
+    protected $activityLogger;
+
+    public function __construct(ActivityLogger $activityLogger)
+    {
+        $this->activityLogger = $activityLogger;
+    }
     /**
      * Display the registration view.
      */
@@ -50,6 +57,17 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
+
+        // Log user registration
+        $this->activityLogger->logLogin($user, [
+            'login_method' => 'registration',
+            'user_agent' => $request->userAgent(),
+            'ip_address' => $request->ip(),
+            'registration_data' => [
+                'employee_id' => $user->employee_id,
+                'role' => $user->role
+            ]
+        ]);
 
         $user = auth()->user();
         if ($user->hasRole('admin')) {

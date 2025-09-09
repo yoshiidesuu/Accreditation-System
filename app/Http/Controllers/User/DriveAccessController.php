@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\ParameterContent;
 use App\Services\DriveFileManager;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -12,10 +13,12 @@ use Illuminate\Support\Facades\Log;
 class DriveAccessController extends Controller
 {
     protected $driveFileManager;
+    protected $activityLogger;
 
-    public function __construct(DriveFileManager $driveFileManager)
+    public function __construct(DriveFileManager $driveFileManager, ActivityLogger $activityLogger)
     {
         $this->driveFileManager = $driveFileManager;
+        $this->activityLogger = $activityLogger;
     }
 
     /**
@@ -121,6 +124,13 @@ class DriveAccessController extends Controller
         );
 
         if ($success) {
+            // Log the access request activity
+            $this->activityLogger->logAccessRequest(
+                $parameterContent,
+                'requested',
+                ['message' => $request->message ?? '']
+            );
+
             return response()->json([
                 'success' => true,
                 'message' => 'Access request submitted successfully'
@@ -165,6 +175,13 @@ class DriveAccessController extends Controller
             );
 
             if ($result) {
+                // Log the file upload activity
+                $this->activityLogger->logFileUpload(
+                    $parameterContent,
+                    'gdrive',
+                    ['share_link' => $request->share_link]
+                );
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Google Drive file uploaded successfully',
@@ -226,6 +243,13 @@ class DriveAccessController extends Controller
                 $parameterContent->save();
             }
 
+            // Log the file edit activity
+            $this->activityLogger->logFileEdit(
+                $parameterContent,
+                'gdrive',
+                $request->only(['content', 'notes', 'share_link'])
+            );
+
             return response()->json([
                 'success' => true,
                 'message' => 'Google Drive file updated successfully'
@@ -251,6 +275,13 @@ class DriveAccessController extends Controller
         }
 
         try {
+            // Log the file deletion activity before deleting
+            $this->activityLogger->logFileDelete(
+                $parameterContent,
+                'gdrive',
+                ['drive_file_id' => $parameterContent->drive_file_id]
+            );
+
             $parameterContent->delete();
 
             return response()->json([
@@ -280,6 +311,13 @@ class DriveAccessController extends Controller
         $accessUrl = $this->driveFileManager->getAccessUrl($parameterContent);
 
         if ($accessUrl) {
+            // Log the file download/access activity
+            $this->activityLogger->logFileDownload(
+                $parameterContent,
+                'gdrive',
+                ['access_url_generated' => true]
+            );
+
             return response()->json([
                 'success' => true,
                 'access_url' => $accessUrl

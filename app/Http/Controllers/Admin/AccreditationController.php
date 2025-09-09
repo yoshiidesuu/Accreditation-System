@@ -8,14 +8,18 @@ use App\Models\College;
 use App\Models\AcademicYear;
 use App\Models\User;
 use App\Models\ParameterContent;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AccreditationController extends Controller
 {
-    public function __construct()
+    protected $activityLogger;
+
+    public function __construct(ActivityLogger $activityLogger)
     {
+        $this->activityLogger = $activityLogger;
         $this->middleware('auth');
         $this->middleware('role:admin');
     }
@@ -208,13 +212,14 @@ class AccreditationController extends Controller
         ]);
 
         // Log the update
-        activity()
-            ->performedOn($accreditation)
-            ->causedBy(Auth::user())
-            ->withProperties($request->only([
-                'title', 'status', 'assigned_lead_id', 'assigned_members'
-            ]))
-            ->log('Admin updated accreditation');
+        $this->activityLogger->logAccreditationTagging(
+            $accreditation,
+            'admin_updated',
+            array_merge(
+                $request->only(['title', 'status', 'assigned_lead_id', 'assigned_members']),
+                ['updated_by' => Auth::user()->name]
+            )
+        );
 
         return redirect()->route('admin.accreditations.show', $accreditation)
             ->with('success', 'Accreditation updated successfully.');

@@ -5,12 +5,19 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Parameter;
 use App\Models\ParameterContent;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class ParameterContentController extends Controller
 {
+    protected $activityLogger;
+
+    public function __construct(ActivityLogger $activityLogger)
+    {
+        $this->activityLogger = $activityLogger;
+    }
     /**
      * Display a listing of parameter contents.
      */
@@ -149,6 +156,16 @@ class ParameterContentController extends Controller
             $parameterContent->update(['attachments' => $attachments]);
         }
 
+        // Log the file upload activity
+        $this->activityLogger->logFileUpload(
+            $parameterContent,
+            'local',
+            [
+                'parameter_title' => $parameter->title,
+                'attachments_count' => count($parameterContent->attachments ?? [])
+            ]
+        );
+
         return redirect()->route('user.parameter-contents.show', $parameterContent)
             ->with('success', 'Parameter content created successfully.');
     }
@@ -258,6 +275,18 @@ class ParameterContentController extends Controller
             $parameterContent->update(['attachments' => $existingAttachments]);
         }
 
+        // Log the file edit activity
+        $this->activityLogger->logFileEdit(
+            $parameterContent,
+            'local',
+            [
+                'parameter_title' => $parameterContent->parameter->title,
+                'changes' => $request->only(['content', 'notes', 'academic_year_id']),
+                'attachments_removed' => count($request->remove_attachments ?? []),
+                'attachments_added' => $request->hasFile('attachments') ? count($request->file('attachments')) : 0
+            ]
+        );
+
         return redirect()->route('user.parameter-contents.show', $parameterContent)
             ->with('success', 'Parameter content updated successfully.');
     }
@@ -277,6 +306,16 @@ class ParameterContentController extends Controller
             return redirect()->route('user.parameter-contents.index')
                 ->with('error', 'Cannot delete submitted content.');
         }
+
+        // Log the file deletion activity before deleting
+        $this->activityLogger->logFileDelete(
+            $parameterContent,
+            'local',
+            [
+                'parameter_title' => $parameterContent->parameter->title,
+                'attachments_count' => count($parameterContent->attachments ?? [])
+            ]
+        );
 
         // Delete associated files
         if ($parameterContent->attachments) {
@@ -317,6 +356,16 @@ class ParameterContentController extends Controller
             'status' => 'submitted',
             'submitted_at' => now(),
         ]);
+
+        // Log the submission activity
+        $this->activityLogger->logAccreditationTagging(
+            $parameterContent,
+            'submitted',
+            [
+                'parameter_title' => $parameterContent->parameter->title,
+                'previous_status' => 'draft'
+            ]
+        );
 
         return redirect()->route('user.parameter-contents.show', $parameterContent)
             ->with('success', 'Parameter content submitted successfully.');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -11,8 +12,11 @@ use Illuminate\Validation\Rule;
 
 class RoleController extends Controller
 {
-    public function __construct()
+    protected $activityLogger;
+
+    public function __construct(ActivityLogger $activityLogger)
     {
+        $this->activityLogger = $activityLogger;
         $this->middleware(['auth', 'role:admin']);
     }
 
@@ -129,15 +133,16 @@ class RoleController extends Controller
         ]);
 
         // Log the role change for audit purposes
-        activity()
-            ->performedOn($user)
-            ->causedBy(auth()->user())
-            ->withProperties([
+        $this->activityLogger->logRoleChange(
+            $user,
+            'role_assigned',
+            [
                 'old_role' => $oldRole,
                 'new_role' => $newRole,
-                'permissions' => $request->permissions ?? []
-            ])
-            ->log('Role updated');
+                'permissions' => $request->permissions ?? [],
+                'changed_by' => auth()->user()->name
+            ]
+        );
 
         return redirect()->route('admin.roles.index')
             ->with('success', "User role updated from '{$oldRole}' to '{$newRole}' successfully.");
@@ -175,15 +180,16 @@ class RoleController extends Controller
             $user->update(['role' => $request->bulk_role]);
 
             // Log the role change
-            activity()
-                ->performedOn($user)
-                ->causedBy(auth()->user())
-                ->withProperties([
+            $this->activityLogger->logRoleChange(
+                $user,
+                'role_assigned',
+                [
                     'old_role' => $oldRole,
                     'new_role' => $request->bulk_role,
-                    'bulk_update' => true
-                ])
-                ->log('Role updated (bulk)');
+                    'bulk_update' => true,
+                    'changed_by' => auth()->user()->name
+                ]
+            );
 
             $updatedCount++;
         }

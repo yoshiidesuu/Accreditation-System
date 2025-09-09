@@ -8,11 +8,18 @@ use App\Models\ParameterContent;
 use App\Models\User;
 use App\Models\College;
 use App\Models\AcademicYear;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ParameterContentController extends Controller
 {
+    protected $activityLogger;
+
+    public function __construct(ActivityLogger $activityLogger)
+    {
+        $this->activityLogger = $activityLogger;
+    }
     /**
      * Display a listing of parameter contents.
      */
@@ -153,6 +160,18 @@ class ParameterContentController extends Controller
             'reviewed_at' => now(),
             'reviewed_by' => Auth::id(),
         ]);
+
+        // Log the approval activity
+        $this->activityLogger->logAccessRequest(
+            $parameterContent,
+            'approved',
+            [
+                'reviewer_id' => Auth::id(),
+                'reviewer_name' => Auth::user()->name,
+                'parameter_title' => $parameterContent->parameter->title,
+                'previous_status' => 'submitted'
+            ]
+        );
 
         return redirect()->route('admin.parameter-contents.show', $parameterContent)
             ->with('success', 'Parameter content approved successfully.');
