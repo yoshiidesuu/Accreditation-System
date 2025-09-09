@@ -184,7 +184,7 @@ Create each module with RESTful controllers, policies, validations, tests.
 * [x] File upload policy manager (allowed types, max size, retention policy).
 * [x] Dark/light toggle stored in DB per user / system default.
 
-### Phase 8 — File handling & Google Drive integration
+### Phase 8 — File handling & Google Drive integration ( BY THIS IT MEANS GOOGLE DRIVE LINK NOT API BASED.)
 
 * [ ] Implement storage adapter pattern: `local`, `s3` (optional), `gdrive`.
 * [ ] Google Drive tasks:
@@ -197,15 +197,15 @@ Create each module with RESTful controllers, policies, validations, tests.
 
 ### Phase 9 — Activity logs & auditing
 
-* [ ] Global `activity_logs` table (user\_id, model\_type, model\_id, action, meta JSON, ip\_address, user\_agent, created\_at).
-* [ ] Log events:
+* [x] Global `activity_logs` table (user\_id, model\_type, model\_id, action, meta JSON, ip\_address, user\_agent, created\_at).
+* [x] Log events:
 
   * File uploads/downloads, edits, deletes
   * Access requests and approvals
   * Role/permission changes
   * Accreditation tagging actions
   * Login successes/failures
-* [ ] Admin UI for searching/filters and export.
+* [x] Admin UI for searching/filters and export.
 
 ### Phase 10 — Testing, QA & deployment
 

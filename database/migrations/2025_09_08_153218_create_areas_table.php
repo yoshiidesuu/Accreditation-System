@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('college_id')->constrained()->onDelete('cascade');
             $table->foreignId('academic_year_id')->constrained()->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
             
             // Foreign key for parent area (self-referencing)
             $table->foreign('parent_area_id')->references('id')->on('areas')->onDelete('cascade');

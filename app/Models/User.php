@@ -56,6 +56,16 @@ class User extends Authenticatable
     ];
 
     /**
+     * The model's default attribute values.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'theme_mode' => 'light',
+        'status' => 'active',
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

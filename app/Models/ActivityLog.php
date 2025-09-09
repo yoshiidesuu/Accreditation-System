@@ -196,7 +196,7 @@ class ActivityLog extends Model
     /**
      * Check if this activity has changes.
      */
-    public function hasChanges()
+    public function hasPropertyChanges()
     {
         return !empty($this->changes) || !empty($this->old_values);
     }

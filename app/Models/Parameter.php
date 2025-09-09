@@ -16,21 +16,19 @@ class Parameter extends Model
         'code',
         'title',
         'description',
-        'type',
-        'validation_rules',
-        'options',
-        'required',
-        'order',
-        'active',
-        'area_id',
+        'category',
+        'subcategory',
+        'weight',
+        'status',
+        'required_documents',
+        'evaluation_criteria',
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [
-        'validation_rules' => 'array',
-        'options' => 'array',
-        'required' => 'boolean',
-        'active' => 'boolean',
-        'order' => 'integer',
+        'required_documents' => 'array',
+        'weight' => 'integer',
     ];
 
     protected $dates = [
@@ -40,9 +38,14 @@ class Parameter extends Model
     ];
 
     // Relationships
-    public function area()
+    public function creator()
     {
-        return $this->belongsTo(Area::class);
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     public function parameterContents()
@@ -53,27 +56,17 @@ class Parameter extends Model
     // Scopes
     public function scopeActive($query)
     {
-        return $query->where('active', true);
+        return $query->where('status', 'active');
     }
 
-    public function scopeRequired($query)
+    public function scopeByCategory($query, $category)
     {
-        return $query->where('required', true);
-    }
-
-    public function scopeByArea($query, $areaId)
-    {
-        return $query->where('area_id', $areaId);
-    }
-
-    public function scopeByType($query, $type)
-    {
-        return $query->where('type', $type);
+        return $query->where('category', $category);
     }
 
     public function scopeOrdered($query)
     {
-        return $query->orderBy('order', 'asc')->orderBy('title', 'asc');
+        return $query->orderBy('category', 'asc')->orderBy('subcategory', 'asc')->orderBy('title', 'asc');
     }
 
     // Accessors

@@ -37,6 +37,7 @@ class UserFactory extends Factory
             'position' => fake()->optional()->jobTitle(),
             'phone' => fake()->optional()->phoneNumber(),
             'permissions' => json_encode([]),
+            'theme_mode' => 'light',
             'remember_token' => Str::random(10),
         ];
     }

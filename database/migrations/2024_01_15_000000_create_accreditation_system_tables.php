@@ -29,6 +29,8 @@ return new class extends Migration
             $table->json('permissions')->nullable();
             $table->timestamp('last_login_at')->nullable();
             $table->string('profile_photo')->nullable();
+            $table->string('theme_mode')->nullable()->default('light'); // 'light' or 'dark'
+            $table->json('theme_preferences')->nullable(); // Custom theme settings
             $table->rememberToken();
             $table->timestamps();
             
@@ -107,8 +109,32 @@ return new class extends Migration
 
         // Accreditation-specific tables start here
 
-        // Accreditation-specific tables
-        
+        // Colleges table
+        Schema::create('colleges', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('code')->unique();
+            $table->text('address')->nullable();
+            $table->string('contact')->nullable();
+            $table->foreignId('coordinator_id')->nullable()->constrained('users');
+            $table->json('meta')->nullable();
+            $table->timestamps();
+            
+            $table->index('code');
+        });
+
+        // Academic years table
+        Schema::create('academic_years', function (Blueprint $table) {
+            $table->id();
+            $table->string('label');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->boolean('active')->default(false);
+            $table->timestamps();
+            
+            $table->index('active');
+        });
+
         // Parameters table - stores accreditation parameters/criteria
         Schema::create('parameters', function (Blueprint $table) {
             $table->id();
@@ -206,17 +232,22 @@ return new class extends Migration
         });
 
         // Activity log table - audit trail
-        Schema::create('activity_logs', function (Blueprint $table) {
+        Schema::create('activity_log', function (Blueprint $table) {
             $table->id();
             $table->string('log_name')->nullable();
             $table->text('description');
             $table->nullableMorphs('subject', 'subject');
+            $table->string('event')->nullable();
             $table->nullableMorphs('causer', 'causer');
             $table->json('properties')->nullable();
             $table->string('batch_uuid')->nullable();
             $table->timestamps();
             
             $table->index('log_name');
+            $table->index('subject_type');
+            $table->index('subject_id');
+            $table->index('causer_type');
+            $table->index('causer_id');
         });
 
         // Comments table - for collaborative feedback
@@ -293,12 +324,14 @@ return new class extends Migration
         Schema::dropIfExists('settings');
         Schema::dropIfExists('file_uploads');
         Schema::dropIfExists('comments');
-        Schema::dropIfExists('activity_logs');
+        Schema::dropIfExists('activity_log');
         Schema::dropIfExists('notifications');
         Schema::dropIfExists('reports');
         Schema::dropIfExists('evaluations');
         Schema::dropIfExists('parameter_contents');
         Schema::dropIfExists('parameters');
+        Schema::dropIfExists('academic_years');
+        Schema::dropIfExists('colleges');
         Schema::dropIfExists('failed_jobs');
         Schema::dropIfExists('job_batches');
         Schema::dropIfExists('jobs');

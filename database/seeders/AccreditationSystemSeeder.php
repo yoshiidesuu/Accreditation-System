@@ -340,7 +340,7 @@ class AccreditationSystemSeeder extends Seeder
         ]);
 
         // Log the seeding activity
-        DB::table('activity_logs')->insert([
+        DB::table('activity_log')->insert([
             'log_name' => 'system',
             'description' => 'Initial system data seeded',
             'subject_type' => null,
