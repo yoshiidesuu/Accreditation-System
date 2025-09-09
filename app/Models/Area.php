@@ -56,11 +56,6 @@ class Area extends Model
         return $this->hasMany(Area::class, 'parent_area_id');
     }
 
-    public function parameters()
-    {
-        return $this->hasMany(Parameter::class);
-    }
-
     /**
      * Get all parameters for this area.
      */
