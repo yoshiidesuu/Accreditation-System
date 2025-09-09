@@ -65,6 +65,34 @@ class ActivityLog extends Model
     }
 
     /**
+     * Get the badge color for the action.
+     */
+    public function getActionBadgeColor()
+    {
+        $colors = [
+            'created' => 'success',
+            'updated' => 'info',
+            'deleted' => 'danger',
+            'uploaded' => 'primary',
+            'downloaded' => 'secondary',
+            'login_success' => 'success',
+            'login_failed' => 'danger',
+            'logout' => 'warning',
+            'tagged' => 'info',
+            'untagged' => 'secondary',
+            'assigned' => 'primary',
+            'approved' => 'success',
+            'rejected' => 'danger',
+            'requested' => 'info',
+            'role_changed' => 'warning',
+            'permission_granted' => 'success',
+            'permission_revoked' => 'danger',
+        ];
+
+        return $colors[$this->action] ?? 'secondary';
+    }
+
+    /**
      * Scope to filter by log name.
      */
     public function scopeByLogName($query, $logName)

@@ -194,6 +194,11 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.activity-logs*') ? 'active' : '' }}" href="{{ route('admin.activity-logs.index') ?? '#' }}">
+                                <i class="fas fa-clipboard-list me-2"></i>Activity Logs
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.audit*') ? 'active' : '' }}" href="{{ route('admin.audit.index') ?? '#' }}">
                                 <i class="fas fa-history me-2"></i>Audit Logs
                             </a>

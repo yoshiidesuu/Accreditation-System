@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\ThemeController;
 use App\Http\Controllers\Admin\BrandingController;
 use App\Http\Controllers\Admin\DrivePermissionController;
+use App\Http\Controllers\Admin\ActivityLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -126,6 +127,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::post('/{asset}/activate', [BrandingController::class, 'activate'])->name('activate');
         Route::delete('/{asset}', [BrandingController::class, 'delete'])->name('delete');
         Route::get('/{asset}/preview', [BrandingController::class, 'preview'])->name('preview');
+    });
+
+    // Activity Logs
+    Route::prefix('activity-logs')->name('activity-logs.')->group(function () {
+        Route::get('/', [ActivityLogController::class, 'index'])->name('index');
+        Route::get('/export', [ActivityLogController::class, 'export'])->name('export');
+        Route::get('/stats', [ActivityLogController::class, 'stats'])->name('stats');
+        Route::get('/{activityLog}', [ActivityLogController::class, 'show'])->name('show');
     });
 
     // Audit Logs
