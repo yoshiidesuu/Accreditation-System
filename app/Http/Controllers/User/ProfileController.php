@@ -101,4 +101,37 @@ class ProfileController extends Controller
         
         return back()->with('success', 'Settings updated successfully.');
     }
+    
+    /**
+     * Update user theme preferences
+     */
+    public function updateTheme(Request $request)
+    {
+        $user = Auth::user();
+        
+        $validated = $request->validate([
+            'theme_mode' => 'required|in:light,dark,auto',
+            'theme_preferences' => 'nullable|array',
+            'theme_preferences.primary_color' => 'nullable|string|max:7',
+            'theme_preferences.sidebar_style' => 'nullable|in:default,compact,minimal',
+            'theme_preferences.font_size' => 'nullable|in:small,medium,large',
+        ]);
+        
+        $user->setThemeMode($validated['theme_mode']);
+        
+        if (isset($validated['theme_preferences'])) {
+            $user->updateThemePreferences($validated['theme_preferences']);
+        }
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Theme preferences updated successfully.',
+                'theme_mode' => $user->getThemeMode(),
+                'theme_preferences' => $user->getThemePreferences()
+            ]);
+        }
+        
+        return back()->with('success', 'Theme preferences updated successfully.');
+    }
 }

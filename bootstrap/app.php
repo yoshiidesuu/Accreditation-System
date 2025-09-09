@@ -15,6 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // Global middleware
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         
+        // Web middleware group
+        $middleware->web(append: [
+            \App\Http\Middleware\ThemeMiddleware::class,
+        ]);
+        
         // Middleware aliases
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleBasedAccess::class,

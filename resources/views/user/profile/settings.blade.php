@@ -171,11 +171,83 @@
             </div>
         </div>
         
+        <!-- Theme Preferences -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-palette me-2"></i>Theme Preferences
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ route('user.theme.update') }}" id="themeForm">
+                    @csrf
+                    @method('PUT')
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="theme_mode" class="form-label">Theme Mode</label>
+                                <select class="form-select" id="theme_mode" name="theme_mode">
+                                    <option value="light" {{ ($user->getThemeMode() ?? 'light') === 'light' ? 'selected' : '' }}>Light Mode</option>
+                                    <option value="dark" {{ ($user->getThemeMode() ?? 'light') === 'dark' ? 'selected' : '' }}>Dark Mode</option>
+                                    <option value="auto" {{ ($user->getThemeMode() ?? 'light') === 'auto' ? 'selected' : '' }}>Auto (System)</option>
+                                </select>
+                                <small class="form-text text-muted">Choose your preferred theme appearance</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="font_size" class="form-label">Font Size</label>
+                                <select class="form-select" id="font_size" name="theme_preferences[font_size]">
+                                    @php $preferences = $user->getThemePreferences() ?? []; @endphp
+                                    <option value="small" {{ ($preferences['font_size'] ?? 'medium') === 'small' ? 'selected' : '' }}>Small</option>
+                                    <option value="medium" {{ ($preferences['font_size'] ?? 'medium') === 'medium' ? 'selected' : '' }}>Medium</option>
+                                    <option value="large" {{ ($preferences['font_size'] ?? 'medium') === 'large' ? 'selected' : '' }}>Large</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="sidebar_style" class="form-label">Sidebar Style</label>
+                                <select class="form-select" id="sidebar_style" name="theme_preferences[sidebar_style]">
+                                    <option value="default" {{ ($preferences['sidebar_style'] ?? 'default') === 'default' ? 'selected' : '' }}>Default</option>
+                                    <option value="compact" {{ ($preferences['sidebar_style'] ?? 'default') === 'compact' ? 'selected' : '' }}>Compact</option>
+                                    <option value="minimal" {{ ($preferences['sidebar_style'] ?? 'default') === 'minimal' ? 'selected' : '' }}>Minimal</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="primary_color" class="form-label">Primary Color</label>
+                                <input type="color" class="form-control form-control-color" id="primary_color" 
+                                       name="theme_preferences[primary_color]" 
+                                       value="{{ $preferences['primary_color'] ?? '#800020' }}" 
+                                       title="Choose your primary color">
+                                <small class="form-text text-muted">Customize the primary color scheme</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" id="previewTheme">
+                            <i class="fas fa-eye me-1"></i>Preview Changes
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Theme Preferences
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
         <!-- Display Preferences -->
         <div class="card mt-4">
             <div class="card-header">
                 <h5 class="card-title mb-0">
-                    <i class="fas fa-palette me-2"></i>Display Preferences
+                    <i class="fas fa-desktop me-2"></i>Display Preferences
                 </h5>
             </div>
             <div class="card-body">
@@ -351,6 +423,140 @@ document.getElementById('browser_notifications').addEventListener('change', func
         }
     }
 });
+</script>
+@endpush
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // Theme form handling
+    $('#themeForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        $.ajax({
+            url: $(this).attr('action'),
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Apply theme changes immediately
+                    applyThemeChanges(response.theme_mode, response.theme_preferences);
+                    
+                    // Show success message
+                    showAlert('success', response.message);
+                } else {
+                    showAlert('error', 'Failed to update theme preferences.');
+                }
+            },
+            error: function(xhr) {
+                let message = 'An error occurred while updating theme preferences.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                showAlert('error', message);
+            }
+        });
+    });
+    
+    // Preview theme changes
+    $('#previewTheme').on('click', function() {
+        const themeMode = $('#theme_mode').val();
+        const primaryColor = $('#primary_color').val();
+        const fontSize = $('#font_size').val();
+        const sidebarStyle = $('#sidebar_style').val();
+        
+        // Apply preview changes
+        previewThemeChanges(themeMode, {
+            primary_color: primaryColor,
+            font_size: fontSize,
+            sidebar_style: sidebarStyle
+        });
+        
+        showAlert('info', 'Theme preview applied. Save to make changes permanent.');
+    });
+    
+    // Theme mode change handler
+    $('#theme_mode').on('change', function() {
+        const mode = $(this).val();
+        if (mode === 'auto') {
+            // Detect system preference
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyThemeMode(prefersDark ? 'dark' : 'light');
+        } else {
+            applyThemeMode(mode);
+        }
+    });
+});
+
+function applyThemeChanges(themeMode, preferences) {
+    // Apply theme mode
+    applyThemeMode(themeMode);
+    
+    // Apply theme preferences
+    if (preferences) {
+        if (preferences.primary_color) {
+            document.documentElement.style.setProperty('--bs-primary', preferences.primary_color);
+        }
+        
+        if (preferences.font_size) {
+            const fontSizes = {
+                'small': '0.875rem',
+                'medium': '1rem',
+                'large': '1.125rem'
+            };
+            document.documentElement.style.setProperty('--bs-body-font-size', fontSizes[preferences.font_size]);
+        }
+        
+        if (preferences.sidebar_style) {
+            $('body').removeClass('sidebar-compact sidebar-minimal').addClass('sidebar-' + preferences.sidebar_style);
+        }
+    }
+}
+
+function previewThemeChanges(themeMode, preferences) {
+    applyThemeChanges(themeMode, preferences);
+}
+
+function applyThemeMode(mode) {
+    if (mode === 'dark') {
+        $('html').attr('data-bs-theme', 'dark');
+        $('body').addClass('dark-mode').removeClass('light-mode');
+    } else {
+        $('html').attr('data-bs-theme', 'light');
+        $('body').addClass('light-mode').removeClass('dark-mode');
+    }
+}
+
+function showAlert(type, message) {
+    const alertClass = type === 'success' ? 'alert-success' : 
+                      type === 'error' ? 'alert-danger' : 
+                      type === 'info' ? 'alert-info' : 'alert-warning';
+    
+    const alert = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // Remove existing alerts
+    $('.alert').remove();
+    
+    // Add new alert at the top of the page
+    $('.container').prepend(alert);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(function() {
+        $('.alert').fadeOut();
+    }, 5000);
+}
 </script>
 @endpush
 

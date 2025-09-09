@@ -29,6 +29,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/settings', [ProfileController::class, 'settings'])->name('settings');
     Route::put('/settings', [ProfileController::class, 'updateSettings'])->name('settings.update');
+    Route::put('/theme', [ProfileController::class, 'updateTheme'])->name('theme.update');
     
     // Routes that require specific roles
     Route::middleware('role:coordinator,faculty,staff')->group(function () {

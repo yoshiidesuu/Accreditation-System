@@ -39,6 +39,8 @@ class User extends Authenticatable
         'two_factor_secret',
         'two_factor_recovery_codes',
         'two_factor_confirmed_at',
+        'theme_mode',
+        'theme_preferences',
     ];
 
     /**
@@ -67,6 +69,7 @@ class User extends Authenticatable
             'last_login_at' => 'datetime',
             'two_factor_enabled' => 'boolean',
             'two_factor_confirmed_at' => 'datetime',
+            'theme_preferences' => 'array',
         ];
     }
 
@@ -77,6 +80,44 @@ class User extends Authenticatable
     {
         $name = trim($this->first_name . ' ' . $this->last_name);
         return $name ?: 'Unknown User';
+    }
+
+    /**
+     * Get user's theme preference or system default
+     */
+    public function getThemeMode(): string
+    {
+        return $this->theme_mode ?? 'light';
+    }
+
+    /**
+     * Set user's theme preference
+     */
+    public function setThemeMode(string $mode): void
+    {
+        $this->update(['theme_mode' => $mode]);
+    }
+
+    /**
+     * Get user's theme preferences with defaults
+     */
+    public function getThemePreferences(): array
+    {
+        return array_merge([
+            'primary_color' => '#800000',
+            'sidebar_style' => 'default',
+            'font_size' => 'medium',
+        ], $this->theme_preferences ?? []);
+    }
+
+    /**
+     * Update user's theme preferences
+     */
+    public function updateThemePreferences(array $preferences): void
+    {
+        $current = $this->theme_preferences ?? [];
+        $updated = array_merge($current, $preferences);
+        $this->update(['theme_preferences' => $updated]);
     }
 
     /**

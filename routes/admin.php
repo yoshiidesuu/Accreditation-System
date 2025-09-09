@@ -14,6 +14,8 @@ use App\Http\Controllers\Admin\AccreditationController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\ReportController as MainReportController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\ThemeController;
+use App\Http\Controllers\Admin\BrandingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,6 +107,25 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('settings/maintenance', [SettingsController::class, 'toggleMaintenance'])->name('settings.maintenance');
     Route::post('settings/cache/clear', [SettingsController::class, 'clearCache'])->name('settings.cache.clear');
     Route::post('settings/optimize', [SettingsController::class, 'optimize'])->name('settings.optimize');
+
+    // Theme Management
+    Route::prefix('theme')->name('theme.')->group(function () {
+        Route::get('/', [ThemeController::class, 'index'])->name('index');
+        Route::put('/', [ThemeController::class, 'update'])->name('update');
+        Route::post('/preview', [ThemeController::class, 'preview'])->name('preview');
+        Route::get('/reset', [ThemeController::class, 'reset'])->name('reset');
+        Route::post('/upload-logo', [ThemeController::class, 'uploadLogo'])->name('upload-logo');
+        Route::post('/upload-favicon', [ThemeController::class, 'uploadFavicon'])->name('upload-favicon');
+    });
+
+    // Branding Management
+    Route::prefix('branding')->name('branding.')->group(function () {
+        Route::get('/', [BrandingController::class, 'index'])->name('index');
+        Route::post('/upload', [BrandingController::class, 'upload'])->name('upload');
+        Route::post('/{asset}/activate', [BrandingController::class, 'activate'])->name('activate');
+        Route::delete('/{asset}', [BrandingController::class, 'delete'])->name('delete');
+        Route::get('/{asset}/preview', [BrandingController::class, 'preview'])->name('preview');
+    });
 
     // Audit Logs
     Route::prefix('audit')->name('audit.')->group(function () {

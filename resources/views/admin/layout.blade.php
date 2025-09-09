@@ -204,6 +204,16 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.theme*') ? 'active' : '' }}" href="{{ route('admin.theme.index') ?? '#' }}">
+                                <i class="fas fa-palette me-2"></i>Theme Management
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.branding*') ? 'active' : '' }}" href="{{ route('admin.branding.index') ?? '#' }}">
+                                <i class="fas fa-image me-2"></i>Branding
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.logs*') ? 'active' : '' }}" href="{{ route('admin.logs.index') ?? '#' }}">
                                 <i class="fas fa-history me-2"></i>Activity Logs
                             </a>

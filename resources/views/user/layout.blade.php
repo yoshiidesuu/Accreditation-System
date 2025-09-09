@@ -272,6 +272,13 @@
                             <li><a class="dropdown-item" href="{{ route('user.settings') ?? '#' }}"><i class="fas fa-cog me-2"></i>Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
+                                <button class="dropdown-item" id="themeToggle" type="button">
+                                    <i class="fas fa-moon me-2" id="themeIcon"></i>
+                                    <span id="themeText">Dark Mode</span>
+                                </button>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
                                 <a class="dropdown-item" href="{{ route('logout') ?? '#' }}"
                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                     <i class="fas fa-sign-out-alt me-2"></i>Logout
@@ -377,5 +384,110 @@
     </script>
     
     @stack('scripts')
+    
+    <!-- Theme Toggle Script -->
+    <script>
+    $(document).ready(function() {
+        // Initialize theme based on user preference or system default
+        const userThemeMode = '{{ auth()->user()->getThemeMode() ?? "light" }}';
+        const userPreferences = @json(auth()->user()->getThemePreferences() ?? []);
+        
+        // Apply initial theme
+        initializeTheme(userThemeMode, userPreferences);
+        
+        // Theme toggle functionality
+        $('#themeToggle').on('click', function() {
+            const currentMode = $('html').attr('data-bs-theme') || 'light';
+            const newMode = currentMode === 'light' ? 'dark' : 'light';
+            
+            // Apply theme immediately
+            applyThemeMode(newMode);
+            updateThemeToggleUI(newMode);
+            
+            // Save preference to server
+            saveThemePreference(newMode);
+        });
+        
+        // Listen for system theme changes when in auto mode
+        if (userThemeMode === 'auto') {
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            mediaQuery.addListener(function(e) {
+                applyThemeMode(e.matches ? 'dark' : 'light');
+                updateThemeToggleUI(e.matches ? 'dark' : 'light');
+            });
+        }
+    });
+    
+    function initializeTheme(themeMode, preferences) {
+        let actualMode = themeMode;
+        
+        if (themeMode === 'auto') {
+            actualMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        
+        applyThemeMode(actualMode);
+        updateThemeToggleUI(actualMode);
+        
+        // Apply user preferences
+        if (preferences) {
+            if (preferences.primary_color) {
+                document.documentElement.style.setProperty('--bs-primary', preferences.primary_color);
+            }
+            
+            if (preferences.font_size) {
+                const fontSizes = {
+                    'small': '0.875rem',
+                    'medium': '1rem',
+                    'large': '1.125rem'
+                };
+                document.documentElement.style.setProperty('--bs-body-font-size', fontSizes[preferences.font_size]);
+            }
+            
+            if (preferences.sidebar_style && preferences.sidebar_style !== 'default') {
+                $('body').addClass('sidebar-' + preferences.sidebar_style);
+            }
+        }
+    }
+    
+    function applyThemeMode(mode) {
+        if (mode === 'dark') {
+            $('html').attr('data-bs-theme', 'dark');
+            $('body').addClass('dark-mode').removeClass('light-mode');
+        } else {
+            $('html').attr('data-bs-theme', 'light');
+            $('body').addClass('light-mode').removeClass('dark-mode');
+        }
+    }
+    
+    function updateThemeToggleUI(mode) {
+        const icon = $('#themeIcon');
+        const text = $('#themeText');
+        
+        if (mode === 'dark') {
+            icon.removeClass('fa-moon').addClass('fa-sun');
+            text.text('Light Mode');
+        } else {
+            icon.removeClass('fa-sun').addClass('fa-moon');
+            text.text('Dark Mode');
+        }
+    }
+    
+    function saveThemePreference(mode) {
+        $.ajax({
+            url: '{{ route("user.theme.update") }}',
+            method: 'PUT',
+            data: {
+                theme_mode: mode,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                console.log('Theme preference saved:', mode);
+            },
+            error: function(xhr) {
+                console.error('Failed to save theme preference:', xhr.responseText);
+            }
+        });
+    }
+    </script>
 </body>
 </html>
