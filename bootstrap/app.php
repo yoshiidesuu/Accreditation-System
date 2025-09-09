@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Console\Scheduling\Schedule;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -26,6 +27,15 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withProviders([
         \App\Providers\SecurityServiceProvider::class,
     ])
+    ->withSchedule(function (Schedule $schedule) {
+        // Weekly ranking computation every Sunday at 2:00 AM
+        $schedule->command('rankings:compute --period=weekly')
+                ->weekly()
+                ->sundays()
+                ->at('02:00')
+                ->withoutOverlapping()
+                ->runInBackground();
+    })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

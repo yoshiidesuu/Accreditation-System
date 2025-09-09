@@ -1,0 +1,231 @@
+@extends('layouts.user')
+
+@section('title', 'Edit SWOT Entry')
+
+@section('content')
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Edit SWOT Entry</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('user.dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('user.swot.index') }}">SWOT Analysis</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit Entry</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Edit SWOT Entry</h6>
+                    <span class="badge bg-{{ $swot->status === 'approved' ? 'success' : ($swot->status === 'rejected' ? 'danger' : 'warning') }}">
+                        {{ ucfirst($swot->status) }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    @if($swot->status === 'approved')
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            This SWOT entry has been approved and cannot be edited.
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('user.swot.update', $swot) }}">
+                        @csrf
+                        @method('PUT')
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="college_id" class="form-label">College <span class="text-danger">*</span></label>
+                                    <select name="college_id" id="college_id" class="form-select @error('college_id') is-invalid @enderror" 
+                                            {{ $swot->status === 'approved' ? 'disabled' : 'required' }}>
+                                        <option value="">Select College</option>
+                                        @foreach($colleges as $college)
+                                            <option value="{{ $college->id }}" 
+                                                {{ (old('college_id', $swot->college_id) == $college->id) ? 'selected' : '' }}>
+                                                {{ $college->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('college_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="area_id" class="form-label">Area <span class="text-danger">*</span></label>
+                                    <select name="area_id" id="area_id" class="form-select @error('area_id') is-invalid @enderror" 
+                                            {{ $swot->status === 'approved' ? 'disabled' : 'required' }}>
+                                        <option value="">Select Area</option>
+                                        @foreach($areas as $area)
+                                            <option value="{{ $area->id }}" 
+                                                {{ (old('area_id', $swot->area_id) == $area->id) ? 'selected' : '' }}>
+                                                {{ $area->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('area_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="type" class="form-label">SWOT Type <span class="text-danger">*</span></label>
+                            <select name="type" id="type" class="form-select @error('type') is-invalid @enderror" 
+                                    {{ $swot->status === 'approved' ? 'disabled' : 'required' }}>
+                                <option value="">Select SWOT Type</option>
+                                @foreach($types as $key => $value)
+                                    <option value="{{ $key }}" 
+                                        {{ (old('type', $swot->type) == $key) ? 'selected' : '' }}>
+                                        {{ $value }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('type')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea name="description" id="description" rows="6" 
+                                      class="form-control @error('description') is-invalid @enderror" 
+                                      placeholder="Provide a detailed description of this SWOT item..." 
+                                      maxlength="2000" 
+                                      {{ $swot->status === 'approved' ? 'readonly' : 'required' }}>{{ old('description', $swot->description) }}</textarea>
+                            <div class="form-text">
+                                <span id="char-count">0</span>/2000 characters
+                            </div>
+                            @error('description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        @if($swot->reviewed_at && $swot->notes)
+                            <div class="mb-3">
+                                <label class="form-label">Reviewer Notes</label>
+                                <div class="alert alert-{{ $swot->status === 'approved' ? 'success' : 'danger' }}">
+                                    <strong>Reviewed by:</strong> {{ $swot->reviewer->name ?? 'N/A' }}<br>
+                                    <strong>Date:</strong> {{ $swot->reviewed_at->format('M d, Y H:i') }}<br>
+                                    <strong>Notes:</strong> {{ $swot->notes }}
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ route('user.swot.index') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </a>
+                            @if($swot->status !== 'approved')
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Update SWOT Entry
+                                </button>
+                            @endif
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-info">Entry Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>Created:</strong> {{ $swot->created_at->format('M d, Y H:i') }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Last Updated:</strong> {{ $swot->updated_at->format('M d, Y H:i') }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Status:</strong> 
+                        <span class="badge bg-{{ $swot->status === 'approved' ? 'success' : ($swot->status === 'rejected' ? 'danger' : 'warning') }}">
+                            {{ ucfirst($swot->status) }}
+                        </span>
+                    </div>
+                    @if($swot->reviewed_at)
+                        <div class="mb-2">
+                            <strong>Reviewed:</strong> {{ $swot->reviewed_at->format('M d, Y H:i') }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-info">SWOT Analysis Guide</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-success"><i class="fas fa-plus-circle"></i> Strengths</h6>
+                        <p class="small text-muted">Internal positive factors that give advantages over competitors.</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-warning"><i class="fas fa-minus-circle"></i> Weaknesses</h6>
+                        <p class="small text-muted">Internal negative factors that place the organization at a disadvantage.</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-info"><i class="fas fa-lightbulb"></i> Opportunities</h6>
+                        <p class="small text-muted">External positive factors that could provide competitive advantages.</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-danger"><i class="fas fa-exclamation-triangle"></i> Threats</h6>
+                        <p class="small text-muted">External negative factors that could harm the organization.</p>
+                    </div>
+                </div>
+            </div>
+
+            @if($swot->status !== 'approved')
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-warning">Important Notes</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="small text-muted mb-0">
+                            <li>Changes will reset the entry to pending status</li>
+                            <li>Be specific and provide evidence-based descriptions</li>
+                            <li>Approved entries cannot be edited</li>
+                        </ul>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // Character counter
+    $('#description').on('input', function() {
+        const length = $(this).val().length;
+        $('#char-count').text(length);
+        
+        if (length > 1800) {
+            $('#char-count').addClass('text-warning');
+        } else {
+            $('#char-count').removeClass('text-warning');
+        }
+        
+        if (length >= 2000) {
+            $('#char-count').addClass('text-danger').removeClass('text-warning');
+        } else {
+            $('#char-count').removeClass('text-danger');
+        }
+    });
+    
+    // Trigger character count on page load
+    $('#description').trigger('input');
+});
+</script>
+@endpush
+@endsection

@@ -148,17 +148,17 @@ Create each module with RESTful controllers, policies, validations, tests.
 
 ### Phase 5 — Accreditation workflows & access requests
 
-* [ ] Model: `accreditations` (college\_id, academic\_year\_id, status, assigned\_lead\_id, assigned\_members JSON).
-* [ ] Tagging flow: `accreditation_tags` linking accreditations → parameter\_contents.
-* [ ] Overall coordinator UI to tag colleges and assign accreditors.
-* [ ] Accreditors view: read-only dashboard for assigned accreditations.
-* [ ] Request Access flow:
+* [x] Model: `accreditations` (college\_id, academic\_year\_id, status, assigned\_lead\_id, assigned\_members JSON).
+* [x] Tagging flow: `accreditation_tags` linking accreditations → parameter\_contents.
+* [x] Overall coordinator UI to tag colleges and assign accreditors.
+* [x] Accreditors view: read-only dashboard for assigned accreditations.
+* [x] Request Access flow:
 
-  * [ ] Button `Request Access` on file view for users without permission.
-  * [ ] Create `access_requests` model (file\_id, requester\_id, reason, status, approver\_id, expires\_at).
-  * [ ] Notification: email + in-app to file owner and admin/approver.
-  * [ ] Approve/Reject UI with logging and optional temporary share link generation (expires).
-* [ ] Approval rules: Owner or Admin can approve; approval generates grant and logs.
+  * [x] Button `Request Access` on file view for users without permission.
+  * [x] Create `access_requests` model (file\_id, requester\_id, reason, status, approver\_id, expires\_at).
+  * [x] Notification: email + in-app to file owner and admin/approver.
+  * [x] Approve/Reject UI with logging and optional temporary share link generation (expires).
+* [x] Approval rules: Owner or Admin can approve; approval generates grant and logs.
 
 ### Phase 6 — SWOT Analysis & Area Ranking
 

@@ -7,7 +7,7 @@ use App\Http\Controllers\User\AreaController;
 use App\Http\Controllers\User\ParameterController;
 use App\Http\Controllers\User\ParameterContentController;
 use App\Http\Controllers\User\AccreditationController;
-use App\Http\Controllers\User\SwotEntryController;
+use App\Http\Controllers\User\SwotController;
 use App\Http\Controllers\User\ReportController;
 use App\Http\Controllers\User\ProfileController;
 
@@ -69,9 +69,17 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     });
     
     // Accreditor Access - Assigned accreditors can view dashboard and tagging interface
-    Route::middleware('role:accreditor_lead,accreditor_member')->group(function () {
-        Route::get('accreditations/accreditor-dashboard', [AccreditationController::class, 'accreditorDashboard'])->name('accreditations.accreditor-dashboard');
-        Route::get('accreditations/{accreditation}/tagging', [AccreditationController::class, 'showTagging'])->name('accreditations.show-tagging-accreditor');
+Route::middleware('role:accreditor_lead,accreditor_member')->group(function () {
+Route::get('accreditations/accreditor-dashboard', [AccreditationController::class, 'accreditorDashboard'])->name('accreditations.accreditor-dashboard');
+Route::get('accreditations/{accreditation}/tagging', [AccreditationController::class, 'showTagging'])->name('accreditations.show-tagging-accreditor');
+
+// SWOT Review Queue
+Route::get('swot-review', [App\Http\Controllers\Accreditor\SwotReviewController::class, 'index'])->name('accreditor.swot-review.index');
+Route::get('swot-review/{swotEntry}', [App\Http\Controllers\Accreditor\SwotReviewController::class, 'show'])->name('accreditor.swot-review.show');
+Route::post('swot-review/{swotEntry}/approve', [App\Http\Controllers\Accreditor\SwotReviewController::class, 'approve'])->name('accreditor.swot-review.approve');
+Route::post('swot-review/{swotEntry}/reject', [App\Http\Controllers\Accreditor\SwotReviewController::class, 'reject'])->name('accreditor.swot-review.reject');
+Route::post('swot-review/bulk-approve', [App\Http\Controllers\Accreditor\SwotReviewController::class, 'bulkApprove'])->name('accreditor.swot-review.bulk-approve');
+Route::get('swot-review/stats', [App\Http\Controllers\Accreditor\SwotReviewController::class, 'stats'])->name('accreditor.swot-review.stats');
     });
     
     // Access Request routes
@@ -86,9 +94,9 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     // Share link access route
     Route::get('/share/{shareLink}', [\App\Http\Controllers\User\AccessRequestController::class, 'accessViaShareLink'])->name('share.access');
     
-    // SWOT Analysis - Coordinators and Faculty can manage SWOT entries
-    Route::middleware('role:coordinator,faculty')->group(function () {
-        Route::resource('swot-entries', SwotEntryController::class);
+    // SWOT Analysis - Chairpersons and Faculty can manage SWOT entries
+    Route::middleware('role:chairperson,faculty')->group(function () {
+        Route::resource('swot', SwotController::class);
     });
     
     // Reports - Role-based report access
